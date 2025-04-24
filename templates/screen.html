@@ -13,9 +13,9 @@
 <body>
   <div class="row align-items-start">
     <div class="col-5 text-center">
-      <img src="{{ url_for('static', filename='images/qr-code.png') }}" class="img-fluid">
+      <img src="{{ url_for('static', filename='qr_code.png') }}" class="img-fluid">
       <h1>SCAN ME OR GO TO</h1>
-      <h2 class="text-decoration-underline">{{ config['queue']['url'] }}</h2>
+      <h2 class="text-decoration-underline">{{ config['url-clean'] }}</h2>
       <h1>TO QUEUE A SONG</h1>
     </div>
     <div class="col-7 text-bg-info p5">

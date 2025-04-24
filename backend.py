@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
+import qrcode.compat
+import qrcode.constants
 import yt_dlp
 import subprocess
 import threading
 import time
 import os
 import yaml
+import qrcode
 import queue as song_queue
 
 app = Flask(__name__)
@@ -16,6 +19,18 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
+
+qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_L,
+    box_size=30,
+    border=1
+)
+qr.add_data(config['url'])
+qr.make(fit=True)
+
+img = qr.make_image(fill_color="black", back_color="white")
+img.save("static/qr_code.png")
 
 def download_song(video):
     url = video["url"]
@@ -65,7 +80,7 @@ threading.Thread(target=download_and_play, daemon=True).start()
 
 @app.route('/')
 def index():
-    return render_template('screen.html', now_playing=now_playing, queue=list(queue.queue),config=config)
+    return render_template('screen.html', now_playing=now_playing, queue=list(queue.queue), config=config)
 
 @app.route('/request')
 def request_page():
