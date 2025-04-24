@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Now Playing</title>
+
+  <!-- Web App Meta for iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+</head>
+<body>
+  <div class="row align-items-start">
+    <div class="col-5 text-center">
+      <img src="{{ url_for('static', filename='images/qr-code.png') }}" class="img-fluid">
+      <h1>SCAN ME OR GO TO</h1>
+      <h2 class="text-decoration-underline">{{ config['queue']['url'] }}</h2>
+      <h1>TO QUEUE A SONG</h1>
+    </div>
+    <div class="col-7 text-bg-info p5">
+      <h1>Now Playing:</h1>
+      <img id="current-thumbnail" src="https://img.youtube.com/vi/{{ now_playing.video_id }}/maxresdefault.jpg" class="thumbnail me-3 rounded img-fluid">
+      <h2 id="current-title">{{ now_playing.title }}</h2>
+
+      <h3>Up Next:</h3>
+      <ol id="queue" class="list-group list-group-numbered">
+        {% for song in queue %}
+          <li class="list-group-item">{{ song.title }}</li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    setInterval(async () => {
+      const response = await fetch('/api/now_playing');
+      const data = await response.json();
+      document.getElementById('current-title').textContent = data.now_playing.title || "Nothing!";
+      document.getElementById('current-thumbnail').src = `https://img.youtube.com/vi/${data.now_playing.video_id}/maxresdefault.jpg`
+      console.log(data.video_id)
+
+      const queueList = document.getElementById('queue');
+      queueList.innerHTML = '';
+
+      data.queue.forEach(song => {
+        const li = document.createElement('li');
+        li.textContent = song.title;
+        queueList.appendChild(li);
+      });
+    }, 3000);
+  </script>
+</body>
+</html>
